@@ -15,7 +15,7 @@ public interface IMService {
      * @param serverUrlList list of servers socket (combination of IP and port)
      * @param listener listener for receiving connect events
      */
-    void init(Vector<String> serverUrlList, ConnectionStatusListener listener);
+    void init(Vector<String> serverUrlList, ConnectionStatusListener listener, ServiceConfig config);
 
     /**
      * connect to the server
