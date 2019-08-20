@@ -25,7 +25,7 @@ public class TCPIMService implements IMService {
     private int reconnectInterval = ServiceConstant.DEFAULT_RECONNECT_INTERVAL;
     private int reconnectAttemptCount = ServiceConstant.DEFAULT_RECONNECT_ATTEMPT_COUNT;
     private int resendInterval = ServiceConstant.DEFAULT_RESEND_INTERVAL;
-    private int resendAttemptCound = ServiceConstant.DEFAULT_RESEND_ATTEMPT_COUNT;
+    private int resendAttemptCount = ServiceConstant.DEFAULT_RESEND_ATTEMPT_COUNT;
     private int heartbeatInterval = ServiceConstant.DEFAULT_FOREGROUND_HEARTBEAT_INTERVAL;
     private int foregroundHeartbeatInterval = ServiceConstant.DEFAULT_FOREGROUND_HEARTBEAT_INTERVAL;
     private int backgroundHeartbeatInterval = ServiceConstant.DEFAULT_BACKGROUND_HEARTBEAT_INTERVAL;
@@ -75,7 +75,7 @@ public class TCPIMService implements IMService {
 
     @Override
     public boolean isClosed() {
-        return true;
+        return isClosed;
     }
 
     private void initBootstrap() {
@@ -83,7 +83,7 @@ public class TCPIMService implements IMService {
         bootstrap = new Bootstrap();
         bootstrap.group(loopGroup);
         bootstrap.channel(NioSocketChannel.class);
-        bootstrap.handler(null);
+        bootstrap.handler(new TCPIMServiceInitializer());
         bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
         bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, getConnectTimeout());
     }
@@ -116,11 +116,11 @@ public class TCPIMService implements IMService {
         return resendInterval;
     }
 
-    public int getResendAttemptCound() {
+    public int getResendAttemptCount() {
         if (config != null && config.getResendAttemptCount() > 0) {
             return config.getResendAttemptCount();
         }
-        return resendAttemptCound;
+        return resendAttemptCount;
     }
 
     public int getHeartbeatInterval() {
