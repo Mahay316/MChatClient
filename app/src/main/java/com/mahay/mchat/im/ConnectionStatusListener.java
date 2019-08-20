@@ -1,7 +1,7 @@
 package com.mahay.mchat.im;
 
 /**
- *
+ * The listener interface for receiving connection events
  */
 public interface ConnectionStatusListener {
     /**
@@ -15,7 +15,7 @@ public interface ConnectionStatusListener {
     void onConnecting();
 
     /**
-     * called after
+     * called after failing to connect to server
      */
     void onConnectFailed();
 }

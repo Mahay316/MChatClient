@@ -1,0 +1,19 @@
+syntax = "proto3";
+option java_package = "com.mahay.mchat.im.protobuf";
+option java_outer_classname = "MessageProtobuf";
+
+message Msg {
+    Head head = 1; // message head
+    string body = 2; // message body
+}
+
+message Head {
+    string msgId = 1; // unique id of each message(uuid)
+    int32 msgType = 2; // type of message(i.e. login, private msg, group msg)
+    int32 msgContentType = 3; // type of content of private & group message
+    string fromId = 4; // sender's id
+    string toId = 5; // receiver's id
+    int64 timeStamp = 6; // time when the message was sent
+    int32 statusReport = 7; // the status of message
+    string extend = 8; // extended info, represented by json key-value set
+}
