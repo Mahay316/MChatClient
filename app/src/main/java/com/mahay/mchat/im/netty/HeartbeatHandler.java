@@ -30,7 +30,7 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
                 case WRITER_IDLE:
                     // writer idle is triggered
                     // send a Heartbeat to test connectivity
-                    // TODO: use thread pool to send a Heartbeat package
+                    imService.getExecutorFactory().executeWorkerTask(new SendHeartbeatTask(ctx));
                     break;
             }
         }

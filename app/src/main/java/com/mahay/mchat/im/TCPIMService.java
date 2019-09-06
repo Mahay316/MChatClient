@@ -29,6 +29,7 @@ public class TCPIMService implements IMService {
 
     private Bootstrap bootstrap;
     private Channel channel;
+    private ExecutorFactory executorFactory;
 
     private int connectTimeout = ServiceConstant.DEFAULT_CONNECT_TIMEOUT;
     private int reconnectInterval = ServiceConstant.DEFAULT_RECONNECT_INTERVAL;
@@ -57,6 +58,7 @@ public class TCPIMService implements IMService {
         this.statusListener = statusListener;
         this.config = config;
         this.eventListener = eventListener;
+        executorFactory = new ExecutorFactory();
     }
 
     @Override
@@ -124,6 +126,10 @@ public class TCPIMService implements IMService {
     public MessageProtobuf.Msg getHeartbeatMessage() {
         // TODO: return a default Heartbeat Message
         return null;
+    }
+
+    public ExecutorFactory getExecutorFactory() {
+        return executorFactory;
     }
 
     private void initBootstrap() {
