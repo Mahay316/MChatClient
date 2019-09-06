@@ -121,6 +121,11 @@ public class TCPIMService implements IMService {
         }
     }
 
+    public MessageProtobuf.Msg getHeartbeatMessage() {
+        // TODO: return a default Heartbeat Message
+        return null;
+    }
+
     private void initBootstrap() {
         EventLoopGroup loopGroup = new NioEventLoopGroup();
         bootstrap = new Bootstrap();

@@ -38,7 +38,7 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
     private class SendHeartbeatTask implements Runnable {
         @Override
         public void run() {
-            
+
         }
     }
 }
