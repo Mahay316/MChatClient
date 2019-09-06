@@ -1,6 +1,7 @@
 package com.mahay.mchat.im.netty;
 
 import com.mahay.mchat.im.TCPIMService;
+import com.mahay.mchat.im.protobuf.MessageProtobuf;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -36,9 +37,18 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
     }
 
     private class SendHeartbeatTask implements Runnable {
+        private ChannelHandlerContext ctx;
+
+        public SendHeartbeatTask(ChannelHandlerContext ctx) {
+            this.ctx = ctx;
+        }
+
         @Override
         public void run() {
-
+            MessageProtobuf.Msg heartbeat = imService.getHeartbeatMessage();
+            if (heartbeat != null && ctx.channel().isActive()) {
+                imService.sendMsg(heartbeat);
+            }
         }
     }
 }
