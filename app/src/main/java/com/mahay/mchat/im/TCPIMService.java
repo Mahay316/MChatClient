@@ -1,15 +1,21 @@
 package com.mahay.mchat.im;
 
+import com.mahay.mchat.im.netty.HeartbeatHandler;
 import com.mahay.mchat.im.netty.TCPIMServiceInitializer;
+import com.mahay.mchat.im.netty.TCPMsgHandler;
 import com.mahay.mchat.im.protobuf.MessageProtobuf;
 
 import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.timeout.IdleStateHandler;
 
 public class TCPIMService implements IMService {
     private static volatile TCPIMService instance;
@@ -22,6 +28,7 @@ public class TCPIMService implements IMService {
     private OnServiceEventListener eventListener;
 
     private Bootstrap bootstrap;
+    private Channel channel;
 
     private int connectTimeout = ServiceConstant.DEFAULT_CONNECT_TIMEOUT;
     private int reconnectInterval = ServiceConstant.DEFAULT_RECONNECT_INTERVAL;
@@ -85,6 +92,33 @@ public class TCPIMService implements IMService {
     @Override
     public void dispatchMsg(MessageProtobuf.Msg msg) {
         eventListener.OnMsgReceived(msg);
+    }
+
+    /**
+     * switch on the function which use Heartbeat packet to test connectivity
+     */
+    public void addHeartbeatHandler() {
+        if (channel == null || !channel.isActive() || channel.pipeline() == null) {
+            return;
+        }
+
+        ChannelPipeline pipeline = channel.pipeline();
+        // re-attach the IdleStateHandler
+        if (pipeline.get(IdleStateHandler.class.getSimpleName()) != null) {
+            pipeline.remove(IdleStateHandler.class.getSimpleName());
+        }
+        // losing Heartbeat packet in succession for 3 times representing the connection is failed
+        pipeline.addFirst(IdleStateHandler.class.getSimpleName(),
+                new IdleStateHandler(getHeartbeatInterval() * 3, getHeartbeatInterval(), 0, TimeUnit.MILLISECONDS));
+
+        // re-attach the HeartbeatHandler
+        if (pipeline.get(HeartbeatHandler.class.getSimpleName()) != null) {
+            pipeline.remove(HeartbeatHandler.class.getSimpleName());
+        }
+        if (pipeline.get(TCPMsgHandler.class.getSimpleName()) != null) {
+            pipeline.addBefore(TCPMsgHandler.class.getSimpleName(), HeartbeatHandler.class.getSimpleName(),
+                    new HeartbeatHandler(this));
+        }
     }
 
     private void initBootstrap() {
