@@ -12,10 +12,13 @@ public interface IMService {
     /**
      * initialize the IMService
      *
-     * @param serverUrlList list of servers socket (combination of IP and port)
-     * @param listener listener for receiving connect events
+     * @param serverUrlList  list of servers socket (combination of IP and port)
+     * @param statusListener listener for receiving connect events
+     * @param config         user's customized IMService configure
+     * @param eventListener  interface by which IMService communicates with app
      */
-    void init(Vector<String> serverUrlList, ConnectionStatusListener listener, ServiceConfig config);
+    void init(Vector<String> serverUrlList, ConnectionStatusListener statusListener,
+              ServiceConfig config, OnServiceEventListener eventListener);
 
     /**
      * connect to the server
@@ -41,7 +44,7 @@ public interface IMService {
     /**
      * write message into channel
      *
-     * @param msg message object to be sent
+     * @param msg                  message object to be sent
      * @param isJoinTimeoutManager whether to put msg into timeout managing
      */
     void sendMsg(MessageProtobuf.Msg msg, boolean isJoinTimeoutManager);

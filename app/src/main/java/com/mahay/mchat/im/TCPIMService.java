@@ -16,8 +16,9 @@ public class TCPIMService implements IMService {
     private boolean isClosed;
 
     private Vector<String> serverUrlList;
-    private ConnectionStatusListener listener;
+    private ConnectionStatusListener statusListener;
     private ServiceConfig config;
+    private OnServiceEventListener eventListener;
 
     private Bootstrap bootstrap;
 
@@ -42,10 +43,12 @@ public class TCPIMService implements IMService {
     }
 
     @Override
-    public void init(Vector<String> serverUrlList, ConnectionStatusListener listener, ServiceConfig config) {
+    public void init(Vector<String> serverUrlList, ConnectionStatusListener statusListener,
+                     ServiceConfig config, OnServiceEventListener eventListener) {
         this.serverUrlList = serverUrlList;
-        this.listener = listener;
+        this.statusListener = statusListener;
         this.config = config;
+        this.eventListener = eventListener;
     }
 
     @Override
@@ -78,6 +81,11 @@ public class TCPIMService implements IMService {
         return isClosed;
     }
 
+    @Override
+    public void dispatchMsg(MessageProtobuf.Msg msg) {
+        eventListener.OnMsgReceived(msg);
+    }
+
     private void initBootstrap() {
         EventLoopGroup loopGroup = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
@@ -86,10 +94,6 @@ public class TCPIMService implements IMService {
         bootstrap.handler(new TCPIMServiceInitializer(this));
         bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
         bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, getConnectTimeout());
-    }
-
-    public void dispatchMsg(MessageProtobuf.Msg msg) {
-        // TODO: dispatch message to application layer
     }
 
     public int getConnectTimeout() {
