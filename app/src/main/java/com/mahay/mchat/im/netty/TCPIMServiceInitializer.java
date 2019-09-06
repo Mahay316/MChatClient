@@ -1,5 +1,6 @@
-package com.mahay.mchat.im;
+package com.mahay.mchat.im.netty;
 
+import com.mahay.mchat.im.TCPIMService;
 import com.mahay.mchat.im.protobuf.MessageProtobuf;
 
 import io.netty.channel.ChannelInitializer;
@@ -24,6 +25,7 @@ public class TCPIMServiceInitializer extends ChannelInitializer<SocketChannel> {
         // inbound handlers
         pipeline.addLast(new LengthFieldBasedFrameDecoder(65535, 0, 4, 0, 4));
         pipeline.addLast(new ProtobufDecoder(MessageProtobuf.Msg.getDefaultInstance()));
+        pipeline.addLast(new HeartbeatRespnseHandler());
         pipeline.addLast(new TCPMsgHandler(imService));
 
         // outbound handlers

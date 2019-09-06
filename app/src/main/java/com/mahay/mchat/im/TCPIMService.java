@@ -1,5 +1,6 @@
 package com.mahay.mchat.im;
 
+import com.mahay.mchat.im.netty.TCPIMServiceInitializer;
 import com.mahay.mchat.im.protobuf.MessageProtobuf;
 
 import java.util.Vector;

@@ -1,6 +1,8 @@
-package com.mahay.mchat.im;
+package com.mahay.mchat.im.netty;
 
 import com.alibaba.fastjson.JSONObject;
+import com.mahay.mchat.im.MsgConstant;
+import com.mahay.mchat.im.TCPIMService;
 import com.mahay.mchat.im.protobuf.MessageProtobuf;
 
 import java.util.UUID;
