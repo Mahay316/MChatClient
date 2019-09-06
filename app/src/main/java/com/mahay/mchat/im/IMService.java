@@ -57,4 +57,9 @@ public interface IMService {
      * @return whether the IM service is closed
      */
     boolean isClosed();
+
+    /**
+     * dispatch the message received to application layer
+     */
+    void dispatchMsg(MessageProtobuf.Msg msg);
 }

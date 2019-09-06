@@ -11,14 +11,20 @@ import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
 
 public class TCPIMServiceInitializer extends ChannelInitializer<SocketChannel> {
+    private TCPIMService imService;
+
+    public TCPIMServiceInitializer(TCPIMService imService) {
+        this.imService = imService;
+    }
+
     @Override
-    protected void initChannel(SocketChannel ch) throws Exception {
+    protected void initChannel(SocketChannel ch) {
         ChannelPipeline pipeline = ch.pipeline();
 
         // inbound handlers
-        pipeline.addLast(new LengthFieldBasedFrameDecoder(1024, 0, 4, 0, 4));
+        pipeline.addLast(new LengthFieldBasedFrameDecoder(65535, 0, 4, 0, 4));
         pipeline.addLast(new ProtobufDecoder(MessageProtobuf.Msg.getDefaultInstance()));
-        pipeline.addLast(new TCPMsgHandler());
+        pipeline.addLast(new TCPMsgHandler(imService));
 
         // outbound handlers
         pipeline.addLast(new LengthFieldPrepender(4));

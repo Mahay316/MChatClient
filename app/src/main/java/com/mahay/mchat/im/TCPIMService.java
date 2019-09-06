@@ -83,9 +83,13 @@ public class TCPIMService implements IMService {
         bootstrap = new Bootstrap();
         bootstrap.group(loopGroup);
         bootstrap.channel(NioSocketChannel.class);
-        bootstrap.handler(new TCPIMServiceInitializer());
+        bootstrap.handler(new TCPIMServiceInitializer(this));
         bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
         bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, getConnectTimeout());
+    }
+
+    public void dispatchMsg(MessageProtobuf.Msg msg) {
+        // TODO: dispatch message to application layer
     }
 
     public int getConnectTimeout() {
