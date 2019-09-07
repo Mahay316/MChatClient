@@ -1,8 +1,8 @@
 package com.mahay.mchat.im;
 
-import com.mahay.mchat.im.inf.ConnectionStatusListener;
+import com.mahay.mchat.im.listener.ConnectionStatusListener;
 import com.mahay.mchat.im.inf.IMService;
-import com.mahay.mchat.im.inf.OnServiceEventListener;
+import com.mahay.mchat.im.listener.OnServiceEventListener;
 import com.mahay.mchat.im.inf.ServiceConfig;
 import com.mahay.mchat.im.netty.HeartbeatHandler;
 import com.mahay.mchat.im.netty.TCPIMServiceInitializer;

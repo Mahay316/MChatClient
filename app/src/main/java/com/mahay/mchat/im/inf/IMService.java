@@ -1,5 +1,7 @@
 package com.mahay.mchat.im.inf;
 
+import com.mahay.mchat.im.listener.ConnectionStatusListener;
+import com.mahay.mchat.im.listener.OnServiceEventListener;
 import com.mahay.mchat.im.protobuf.MessageProtobuf;
 
 import java.util.Vector;
