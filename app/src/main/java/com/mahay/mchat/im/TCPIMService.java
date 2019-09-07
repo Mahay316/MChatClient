@@ -21,7 +21,9 @@ import io.netty.util.internal.StringUtil;
 public class TCPIMService implements IMService {
     private static volatile TCPIMService instance;
 
+    // indicate whether the TCPIMService is closed
     private boolean isClosed;
+    private boolean isConnecting;
 
     private Vector<String> serverUrlList;
     private ConnectionStatusListener statusListener;
@@ -71,17 +73,40 @@ public class TCPIMService implements IMService {
 
     @Override
     public void reconnect(boolean first) {
+        if (!isClosed && !isConnecting) {
+            // only the first caller can start reconnecting
+            synchronized (this) {
+                if (!isClosed && !isConnecting) {
+                    isConnecting = true;
 
+                    closeChannel();
+                    executorFactory.executeBossTask(new ReconnectTask(first));
+                }
+            }
+        }
     }
 
     @Override
     public void sendMsg(MessageProtobuf.Msg msg) {
-
+        sendMsg(msg, false);
     }
 
     @Override
     public void sendMsg(MessageProtobuf.Msg msg, boolean isJoinTimeoutManager) {
+        if (msg == null || msg.getHead() == null) {
+            System.err.println("failed to send msg because it's not complete")
+            return;
+        }
 
+        if (!StringUtil.isNullOrEmpty(msg.getHead().getMsgId()) && isJoinTimeoutManager) {
+            joinTimeoutManager();
+        }
+
+        if (channel == null) {
+            System.err.println("failed to send msg because connection hasn't successfully established yet")
+            return;
+        }
+        channel.writeAndFlush(msg);
     }
 
     @Override
@@ -97,7 +122,9 @@ public class TCPIMService implements IMService {
 
     @Override
     public void dispatchMsg(MessageProtobuf.Msg msg) {
-        eventListener.OnMsgReceived(msg);
+        if (eventListener != null) {
+            eventListener.OnMsgReceived(msg);
+        }
     }
 
     /**
@@ -134,6 +161,22 @@ public class TCPIMService implements IMService {
 
     public ExecutorFactory getExecutorFactory() {
         return executorFactory;
+    }
+
+    private void closeChannel() {
+        try {
+            if (channel != null) {
+                // this is an asynchronous method
+                channel.close();
+                channel.eventLoop().shutdownGracefully();
+            }
+        } finally {
+            channel = null;
+        }
+    }
+
+    private void joinTimeoutManager() {
+        // TODO: create a Timeout Manager
     }
 
     private void initBootstrap() {
@@ -203,6 +246,12 @@ public class TCPIMService implements IMService {
      * Runnable class representing reconnecting tasks
      */
     private class ReconnectTask implements Runnable {
+        private boolean isFirst;
+
+        public ReconnectTask(boolean isFirst) {
+            this.isFirst = isFirst;
+        }
+
         @Override
         public void run() {
             // TODO: add connect state callback
