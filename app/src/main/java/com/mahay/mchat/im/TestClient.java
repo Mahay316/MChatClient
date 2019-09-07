@@ -1,5 +1,7 @@
 package com.mahay.mchat.im;
 
+import com.mahay.mchat.im.inf.IMService;
+import com.mahay.mchat.im.inf.OnServiceEventListener;
 import com.mahay.mchat.im.protobuf.MessageProtobuf;
 
 import java.util.UUID;

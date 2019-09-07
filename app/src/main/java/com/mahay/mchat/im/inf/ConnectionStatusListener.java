@@ -1,4 +1,4 @@
-package com.mahay.mchat.im;
+package com.mahay.mchat.im.inf;
 
 /**
  * The listener interface for receiving connection events

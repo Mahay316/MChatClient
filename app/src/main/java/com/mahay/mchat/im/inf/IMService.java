@@ -1,4 +1,4 @@
-package com.mahay.mchat.im;
+package com.mahay.mchat.im.inf;
 
 import com.mahay.mchat.im.protobuf.MessageProtobuf;
 

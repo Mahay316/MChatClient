@@ -1,5 +1,7 @@
 package com.mahay.mchat.im;
 
+import com.mahay.mchat.im.inf.IMService;
+
 /**
  * Factory class that produces IMService implementation
  */
