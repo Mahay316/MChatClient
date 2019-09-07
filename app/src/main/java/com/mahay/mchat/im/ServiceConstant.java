@@ -19,4 +19,8 @@ public class ServiceConstant {
     // interval between two heartbeat packets when app's in the background
     public static final int DEFAULT_BACKGROUND_HEARTBEAT_INTERVAL = 30 * 1000;
 
+    // connect state code
+    public static final int CONNECT_STATE_FAILURE = -1;
+    public static final int CONNECT_STATE_SUCCESS = 1;
+
 }

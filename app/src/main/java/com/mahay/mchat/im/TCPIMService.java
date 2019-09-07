@@ -16,6 +16,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.util.internal.StringUtil;
 
 public class TCPIMService implements IMService {
     private static volatile TCPIMService instance;
@@ -58,6 +59,8 @@ public class TCPIMService implements IMService {
         this.statusListener = statusListener;
         this.config = config;
         this.eventListener = eventListener;
+        // reopen TCPIMService
+        isClosed = false;
         executorFactory = new ExecutorFactory();
     }
 
@@ -83,7 +86,8 @@ public class TCPIMService implements IMService {
 
     @Override
     public void close() {
-
+        // TODO: do some work before shutting down
+        isClosed = true;
     }
 
     @Override
@@ -193,5 +197,97 @@ public class TCPIMService implements IMService {
             return config.getBackgroundHeartbeatInterval();
         }
         return backgroundHeartbeatInterval;
+    }
+
+    /**
+     * Runnable class representing reconnecting tasks
+     */
+    private class ReconnectTask implements Runnable {
+        @Override
+        public void run() {
+            // TODO: add connect state callback
+            while (!isClosed) {
+                int status = reconnect();
+                if (status == ServiceConstant.CONNECT_STATE_SUCCESS) {
+                    break;
+                } else {
+                    try {
+                        Thread.sleep(getReconnectInterval());
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        /**
+         * reconnect method, taking care of the initialization and shut-down of Bootstrap
+         * the part of code that's responsible for connecting operation locates in method connectServer()
+         *
+         * @return the result of attempted connection
+         */
+        private int reconnect() {
+            if (!isClosed) {
+                try {
+                    if (bootstrap != null) {
+                        bootstrap.config().group().shutdownGracefully();
+                    }
+                } finally {
+                    bootstrap = null;
+                }
+                initBootstrap();
+
+                return connectServer();
+            }
+            return ServiceConstant.CONNECT_STATE_FAILURE;
+        }
+
+        private int connectServer() {
+            if (serverUrlList == null || serverUrlList.size() == 0) {
+                return ServiceConstant.CONNECT_STATE_FAILURE;
+            }
+
+            for (int i = 0; (!isClosed && i < serverUrlList.size()); i++) {
+                // valid format of server url: ip[space]port, e.g. 172.0.0.1 8860
+                String serverUrl = serverUrlList.get(i);
+                // if server url is invalid, then try next
+                if (StringUtil.isNullOrEmpty(serverUrl)) {
+                    continue;
+                }
+
+                String[] address = serverUrl.split(" ");
+                for (int j = 1; j <= getReconnectAttemptCount(); j++) {
+                    if (isClosed) {
+                        return ServiceConstant.CONNECT_STATE_FAILURE;
+                    }
+
+                    String serverIp = address[0];
+                    int serverPort = Integer.parseInt(address[1]);
+
+                    // try to connect to server
+                    try {
+                        channel = bootstrap.connect(serverIp, serverPort).sync().channel();
+                    } catch (InterruptedException e) {
+                        System.err.println(j + "th attempted connection to server " + serverUrl + " failed");
+                        e.printStackTrace();
+                    }
+
+                    // if channel is not null, we consider the connection successful
+                    if (channel != null) {
+                        return ServiceConstant.CONNECT_STATE_SUCCESS;
+                    } else {
+                        // sleep for (j * getReconnectInterval()) ms and try again
+                        try {
+                            Thread.sleep(j * getReconnectInterval());
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+            }
+
+            return ServiceConstant.CONNECT_STATE_FAILURE;
+        }
     }
 }
