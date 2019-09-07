@@ -23,6 +23,8 @@ public class TCPIMService implements IMService {
 
     // indicate whether the TCPIMService is closed
     private boolean isClosed;
+    // indicate whether the TCPIMService is during the process of connecting
+    // prevent the connect operation being executed repeatedly
     private boolean isConnecting;
 
     private Vector<String> serverUrlList;
@@ -94,7 +96,7 @@ public class TCPIMService implements IMService {
     @Override
     public void sendMsg(MessageProtobuf.Msg msg, boolean isJoinTimeoutManager) {
         if (msg == null || msg.getHead() == null) {
-            System.err.println("failed to send msg because it's not complete")
+            System.err.println("failed to send msg because it's not complete");
             return;
         }
 
@@ -103,7 +105,7 @@ public class TCPIMService implements IMService {
         }
 
         if (channel == null) {
-            System.err.println("failed to send msg because connection hasn't successfully established yet")
+            System.err.println("failed to send msg because connection hasn't successfully established yet");
             return;
         }
         channel.writeAndFlush(msg);
