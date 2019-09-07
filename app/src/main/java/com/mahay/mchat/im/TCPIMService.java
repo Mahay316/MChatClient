@@ -67,6 +67,7 @@ public class TCPIMService implements IMService {
         this.eventListener = eventListener;
         // reopen TCPIMService
         isClosed = false;
+        isConnecting = false;
         executorFactory = new ExecutorFactory();
         constructHeartbeatMessage();
     }
@@ -116,8 +117,21 @@ public class TCPIMService implements IMService {
 
     @Override
     public void close() {
-        // TODO: do some work before shutting down
+        if (isClosed) {
+            return;
+        }
+
         isClosed = true;
+        isConnecting = false;
+        closeChannel();
+
+        // shutdown EventLoop
+        bootstrap.config().group().shutdownGracefully();
+        bootstrap = null;
+
+        // release the thread pool
+        executorFactory.destoryWorkerPool();
+        executorFactory.destoryBossPool();
     }
 
     @Override
