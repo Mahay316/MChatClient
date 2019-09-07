@@ -1,5 +1,6 @@
 package com.mahay.mchat.im;
 
+import com.alibaba.fastjson.JSONObject;
 import com.mahay.mchat.im.inf.IMService;
 import com.mahay.mchat.im.inf.OnServiceEventListener;
 import com.mahay.mchat.im.protobuf.MessageProtobuf;
@@ -21,17 +22,18 @@ public class TestClient  {
         service.connect();
 
         Thread.sleep(5000);
-        MessageProtobuf.Msg.Builder builder = MessageProtobuf.Msg.newBuilder();
+
         MessageProtobuf.Head.Builder headBuilder = MessageProtobuf.Head.newBuilder();
         headBuilder.setMsgId(UUID.randomUUID().toString());
-        headBuilder.setMsgType(MsgConstant.MsgType.HEARTBEAT_RESPONSE);
+        headBuilder.setMsgType(MsgConstant.MsgType.LOGIN_AUTH_MESSAGE);
         headBuilder.setFromId("12345");
-        headBuilder.setToId("12346");
         headBuilder.setTimeStamp(System.currentTimeMillis());
-        builder.setHead(headBuilder.build());
-        builder.setBody("connection test");
-        service.sendMsg(builder.build());
+        JSONObject jsonObj = new JSONObject();
+        jsonObj.put("token", "token_12345");
+        headBuilder.setExtend(jsonObj.toString());
 
+        MessageProtobuf.Msg.Builder builder = MessageProtobuf.Msg.newBuilder();
+        builder.setHead(headBuilder.build());
         service.sendMsg(builder.build());
     }
 }

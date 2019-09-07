@@ -29,7 +29,7 @@ public class TCPMsgHandler extends ChannelInboundHandlerAdapter {
 
         int msgType = message.getHead().getMsgType();
         if (msgType == MsgConstant.MsgType.SERVER_RESPONSE) {
-            // remove the message successfully received by server
+            // TODO: remove the message successfully received by server
             // from message timeout manager
 
         } else {
