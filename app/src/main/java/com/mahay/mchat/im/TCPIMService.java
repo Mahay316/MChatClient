@@ -5,6 +5,7 @@ import com.mahay.mchat.im.netty.TCPIMServiceInitializer;
 import com.mahay.mchat.im.netty.TCPMsgHandler;
 import com.mahay.mchat.im.protobuf.MessageProtobuf;
 
+import java.util.UUID;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
@@ -44,6 +45,7 @@ public class TCPIMService implements IMService {
     private int heartbeatInterval = ServiceConstant.DEFAULT_FOREGROUND_HEARTBEAT_INTERVAL;
     private int foregroundHeartbeatInterval = ServiceConstant.DEFAULT_FOREGROUND_HEARTBEAT_INTERVAL;
     private int backgroundHeartbeatInterval = ServiceConstant.DEFAULT_BACKGROUND_HEARTBEAT_INTERVAL;
+    private MessageProtobuf.Msg defaultHeartbeatMessage;
 
     public static TCPIMService getInstance() {
         if (instance == null) {
@@ -66,6 +68,7 @@ public class TCPIMService implements IMService {
         // reopen TCPIMService
         isClosed = false;
         executorFactory = new ExecutorFactory();
+        constructHeartbeatMessage();
     }
 
     @Override
@@ -157,12 +160,32 @@ public class TCPIMService implements IMService {
     }
 
     public MessageProtobuf.Msg getHeartbeatMessage() {
-        // TODO: return a default Heartbeat Message
-        return null;
+        if (config != null && config.getHeartbeatMessage() != null) {
+            return config.getHeartbeatMessage();
+        }
+
+        return defaultHeartbeatMessage;
     }
 
     public ExecutorFactory getExecutorFactory() {
         return executorFactory;
+    }
+
+    /**
+     * construct default heartbeat message
+     */
+    private void constructHeartbeatMessage() {
+        // build head
+        MessageProtobuf.Head.Builder headBuilder = MessageProtobuf.Head.newBuilder();
+        headBuilder.setMsgId(UUID.randomUUID().toString());
+        headBuilder.setMsgType(MsgConstant.MsgType.HEARTBEAT_MESSAGE);
+        headBuilder.setTimeStamp(System.currentTimeMillis());
+
+        // build message
+        MessageProtobuf.Msg.Builder builder = MessageProtobuf.Msg.newBuilder();
+        builder.setHead(headBuilder.build());
+
+        defaultHeartbeatMessage = builder.build();
     }
 
     private void closeChannel() {

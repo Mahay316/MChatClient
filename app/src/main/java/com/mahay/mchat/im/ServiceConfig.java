@@ -1,5 +1,7 @@
 package com.mahay.mchat.im;
 
+import com.mahay.mchat.im.protobuf.MessageProtobuf;
+
 public interface ServiceConfig {
     int getConnectTimeout();
 
@@ -14,4 +16,6 @@ public interface ServiceConfig {
     int getForegroundHeartbeatInterval();
 
     int getBackgroundHeartbeatInterval();
+
+    MessageProtobuf.Msg getHeartbeatMessage();
 }
