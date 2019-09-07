@@ -195,7 +195,6 @@ public class TCPIMService implements IMService {
             if (channel != null) {
                 // this is an asynchronous method
                 channel.close();
-                channel.eventLoop().shutdownGracefully();
             }
         } finally {
             channel = null;
@@ -283,8 +282,10 @@ public class TCPIMService implements IMService {
         public void run() {
             // TODO: add connect state callback
             while (!isClosed) {
+                System.out.println("reconnecting");
                 int status = reconnect();
                 if (status == ServiceConstant.CONNECT_STATE_SUCCESS) {
+                    isConnecting = false;
                     break;
                 } else {
                     try {
