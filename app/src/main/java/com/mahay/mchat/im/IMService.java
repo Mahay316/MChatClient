@@ -65,4 +65,14 @@ public interface IMService {
      * dispatch the message received to application layer
      */
     void dispatchMsg(MessageProtobuf.Msg msg);
+
+    /**
+     * return customized or default Heartbeat Message
+     */
+    MessageProtobuf.Msg getHeartbeatMessage();
+
+    /**
+     * switch on the function which use Heartbeat packet to test connectivity
+     */
+    void addHeartbeatHandler();
 }

@@ -2,6 +2,7 @@ package com.mahay.mchat.im.netty;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.mahay.mchat.im.IMService;
 import com.mahay.mchat.im.MsgConstant;
 import com.mahay.mchat.im.TCPIMService;
 import com.mahay.mchat.im.protobuf.MessageProtobuf;
@@ -23,6 +24,7 @@ public class LoginAuthHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
+        System.out.println("message received");
         MessageProtobuf.Msg message = null;
         if (msg instanceof MessageProtobuf.Msg) {
             message = (MessageProtobuf.Msg) msg;
@@ -33,6 +35,7 @@ public class LoginAuthHandler extends ChannelInboundHandlerAdapter {
 
         int msgType = message.getHead().getMsgType();
         if (msgType == MsgConstant.MsgType.LOGIN_AUTH_RESPONSE) {
+            System.out.println("Login Authentication Message received\n" + msg);
 
             JSONObject jsonObj = JSON.parseObject(message.getHead().getExtend());
             int status = jsonObj.getIntValue("status");

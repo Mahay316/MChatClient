@@ -25,6 +25,7 @@ public class HeartbeatHandler extends ChannelInboundHandlerAdapter {
                     // reader idle is triggered
                     // meaning that the connection is somehow failed
                     // then make an attempt to reconnect
+                    System.out.println("reader idle");
                     imService.reconnect(false);
                     break;
                 case WRITER_IDLE:

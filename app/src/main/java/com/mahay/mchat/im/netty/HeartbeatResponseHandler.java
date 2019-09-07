@@ -6,7 +6,7 @@ import com.mahay.mchat.im.protobuf.MessageProtobuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-public class HeartbeatRespnseHandler extends ChannelInboundHandlerAdapter {
+public class HeartbeatResponseHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         MessageProtobuf.Msg message = null;

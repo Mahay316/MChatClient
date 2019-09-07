@@ -25,7 +25,8 @@ public class TCPIMServiceInitializer extends ChannelInitializer<SocketChannel> {
         // inbound handlers
         pipeline.addLast(new LengthFieldBasedFrameDecoder(65535, 0, 4, 0, 4));
         pipeline.addLast(new ProtobufDecoder(MessageProtobuf.Msg.getDefaultInstance()));
-        pipeline.addLast(new HeartbeatRespnseHandler());
+        pipeline.addLast(new HeartbeatResponseHandler());
+        pipeline.addLast(new LoginAuthHandler(imService));
         pipeline.addLast(TCPMsgHandler.class.getSimpleName(), new TCPMsgHandler(imService));
 
         // outbound handlers

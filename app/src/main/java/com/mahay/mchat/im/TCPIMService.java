@@ -135,6 +135,7 @@ public class TCPIMService implements IMService {
     /**
      * switch on the function which use Heartbeat packet to test connectivity
      */
+    @Override
     public void addHeartbeatHandler() {
         if (channel == null || !channel.isActive() || channel.pipeline() == null) {
             return;
@@ -159,6 +160,7 @@ public class TCPIMService implements IMService {
         }
     }
 
+    @Override
     public MessageProtobuf.Msg getHeartbeatMessage() {
         if (config != null && config.getHeartbeatMessage() != null) {
             return config.getHeartbeatMessage();

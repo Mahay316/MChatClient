@@ -18,7 +18,7 @@ public class TestClient  {
         });
         service.connect();
 
-        Thread.sleep(10000);
+        Thread.sleep(5000);
         MessageProtobuf.Msg.Builder builder = MessageProtobuf.Msg.newBuilder();
         MessageProtobuf.Head.Builder headBuilder = MessageProtobuf.Head.newBuilder();
         headBuilder.setMsgId(UUID.randomUUID().toString());
@@ -28,6 +28,8 @@ public class TestClient  {
         headBuilder.setTimeStamp(System.currentTimeMillis());
         builder.setHead(headBuilder.build());
         builder.setBody("connection test");
+        service.sendMsg(builder.build());
+
         service.sendMsg(builder.build());
     }
 }
