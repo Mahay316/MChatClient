@@ -26,7 +26,9 @@ public class MsgTimeoutManager {
 
         int msgType = msg.getHead().getMsgType();
         // if the message is heartbeat message or client response message, do not manage
-        if (msgType == MsgConstant.MsgType.HEARTBEAT_MESSAGE || msgType == MsgConstant.MsgType.CLIENT_RESPONSE) {
+        if (msgType == MsgConstant.MsgType.HEARTBEAT_MESSAGE ||
+                msgType == MsgConstant.MsgType.CLIENT_RESPONSE ||
+                msgType == MsgConstant.MsgType.LOGIN_AUTH_MESSAGE) {
             return;
         }
 

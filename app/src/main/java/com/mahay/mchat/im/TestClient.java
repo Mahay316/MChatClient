@@ -34,6 +34,6 @@ public class TestClient  {
 
         MessageProtobuf.Msg.Builder builder = MessageProtobuf.Msg.newBuilder();
         builder.setHead(headBuilder.build());
-        service.sendMsg(builder.build(), true);
+        service.sendMsg(builder.build());
     }
 }

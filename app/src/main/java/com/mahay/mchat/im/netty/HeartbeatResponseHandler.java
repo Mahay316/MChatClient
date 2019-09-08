@@ -18,8 +18,9 @@ public class HeartbeatResponseHandler extends ChannelInboundHandlerAdapter {
         }
 
         int msgType = message.getHead().getMsgType();
-        if (msgType == MsgConstant.MsgType.HEARTBEAT_RESPONSE) {
+        if (msgType == MsgConstant.MsgType.HEARTBEAT_MESSAGE) {
             // TODO: complete the action when receiving a heartbeat response
+            System.out.println(message);
         } else {
             // if the message is not a Heartbeat Response,
             // then deliver the message to the next handler
