@@ -1,5 +1,7 @@
 package com.mahay.mchat.im.inf;
 
+import com.mahay.mchat.im.ExecutorFactory;
+import com.mahay.mchat.im.MsgTimeoutManager;
 import com.mahay.mchat.im.listener.ConnectionStatusListener;
 import com.mahay.mchat.im.listener.OnServiceEventListener;
 import com.mahay.mchat.im.protobuf.MessageProtobuf;
@@ -77,4 +79,30 @@ public interface IMService {
      * switch on the function which use Heartbeat packet to test connectivity
      */
     void addHeartbeatHandler();
+
+    /**
+     * return the interval between two resend attempts
+     */
+    int getResendInterval();
+
+    /**
+     * return count of resend attempts before report failure
+     */
+    int getResendAttemptCount();
+
+    /**
+     * return the IMService's MsgTimeoutManager
+     */
+    MsgTimeoutManager getMsgTimeoutManager();
+
+    /**
+     * return the IMService's ExecutorFactory
+     */
+    ExecutorFactory getExecutorFactory();
+
+    /**
+     *
+     * return the IMService's OnServiceEventListener
+     */
+    OnServiceEventListener getOnServiceEventListener();
 }

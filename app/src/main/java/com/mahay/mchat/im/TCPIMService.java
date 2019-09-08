@@ -40,6 +40,7 @@ public class TCPIMService implements IMService {
     private Bootstrap bootstrap;
     private Channel channel;
     private ExecutorFactory executorFactory;
+    private MsgTimeoutManager timeoutManager;
 
     private int connectTimeout = ServiceConstant.DEFAULT_CONNECT_TIMEOUT;
     private int reconnectInterval = ServiceConstant.DEFAULT_RECONNECT_INTERVAL;
@@ -73,6 +74,7 @@ public class TCPIMService implements IMService {
         isClosed = false;
         isConnecting = false;
         executorFactory = new ExecutorFactory();
+        timeoutManager = new MsgTimeoutManager(this);
         constructHeartbeatMessage();
     }
 
@@ -109,7 +111,7 @@ public class TCPIMService implements IMService {
         }
 
         if (!StringUtil.isNullOrEmpty(msg.getHead().getMsgId()) && isJoinTimeoutManager) {
-            joinTimeoutManager();
+            joinTimeoutManager(msg);
         }
 
         if (channel == null) {
@@ -187,8 +189,19 @@ public class TCPIMService implements IMService {
         return defaultHeartbeatMessage;
     }
 
+    @Override
+    public MsgTimeoutManager getMsgTimeoutManager() {
+        return timeoutManager;
+    }
+
+    @Override
     public ExecutorFactory getExecutorFactory() {
         return executorFactory;
+    }
+
+    @Override
+    public OnServiceEventListener getOnServiceEventListener() {
+        return eventListener;
     }
 
     /**
@@ -219,8 +232,10 @@ public class TCPIMService implements IMService {
         }
     }
 
-    private void joinTimeoutManager() {
-        // TODO: create a Timeout Manager
+    private void joinTimeoutManager(MessageProtobuf.Msg msg) {
+        if (timeoutManager != null) {
+            timeoutManager.add(msg);
+        }
     }
 
     private void initBootstrap() {
@@ -254,6 +269,7 @@ public class TCPIMService implements IMService {
         return reconnectAttemptCount;
     }
 
+    @Override
     public int getResendInterval() {
         if (config != null && config.getResendInterval() >= 0) {
             return config.getResendInterval();
@@ -261,6 +277,7 @@ public class TCPIMService implements IMService {
         return resendInterval;
     }
 
+    @Override
     public int getResendAttemptCount() {
         if (config != null && config.getResendAttemptCount() > 0) {
             return config.getResendAttemptCount();

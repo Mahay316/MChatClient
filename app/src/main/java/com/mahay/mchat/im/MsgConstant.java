@@ -16,10 +16,16 @@ public class MsgConstant {
         public static final int LOGIN_AUTH_MESSAGE = 0x04;
         // login response from server
         public static final int LOGIN_AUTH_RESPONSE = 0x05;
+
+        public static final int MSG_STATUS_REPORT = 0x06;
     }
 
     public static class LoginStatus {
         public static final int ACCEPT = 0x00;
         public static final int REFUSE = 0x01;
+    }
+
+    public static class MsgStatus {
+        public static final int SEND_MSG_FAILURE = 0x00;
     }
 }
