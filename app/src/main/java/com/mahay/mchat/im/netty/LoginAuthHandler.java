@@ -23,7 +23,6 @@ public class LoginAuthHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        System.out.println("message received");
         MessageProtobuf.Msg message = null;
         if (msg instanceof MessageProtobuf.Msg) {
             message = (MessageProtobuf.Msg) msg;

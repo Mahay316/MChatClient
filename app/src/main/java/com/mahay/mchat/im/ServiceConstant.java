@@ -11,7 +11,7 @@ public class ServiceConstant {
     // times try to reconnect before reporting the failure
     public static final int DEFAULT_RECONNECT_ATTEMPT_COUNT = 5;
     // interval between two message resend attempts
-    public static final int DEFAULT_RESEND_INTERVAL = 1000;
+    public static final int DEFAULT_RESEND_INTERVAL = 5 * 1000;
     // times try to resend a message before reporting the failure
     public static final int DEFAULT_RESEND_ATTEMPT_COUNT = 5;
     // interval between two heartbeat packets when app's in the foreground

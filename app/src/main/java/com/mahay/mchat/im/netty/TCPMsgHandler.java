@@ -1,5 +1,6 @@
 package com.mahay.mchat.im.netty;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.mahay.mchat.im.MsgConstant;
 import com.mahay.mchat.im.TCPIMService;
@@ -29,20 +30,21 @@ public class TCPMsgHandler extends ChannelInboundHandlerAdapter {
 
         int msgType = message.getHead().getMsgType();
         if (msgType == MsgConstant.MsgType.SERVER_RESPONSE) {
-            // TODO: remove the message successfully received by server
-            // from message timeout manager
+            // remove the msg from MsgTimeoutManager because it's been received successfully
+            JSONObject jsonObj = JSON.parseObject(message.getHead().getExtend());
+            imService.getMsgTimeoutManager().remove(jsonObj.getString("msgId"));
 
+            System.out.println("server has received " + message);
         } else {
-            System.out.println("msg received: " + message);
             // immediately send back a response message
             MessageProtobuf.Msg responeMsg = buildClientResponseMsg(message.getHead().getMsgId());
             if (responeMsg != null) {
                 imService.sendMsg(responeMsg);
             }
-        }
 
-        // dispatch the message to application layer
-        imService.dispatchMsg(message);
+            // dispatch the message to application layer
+            imService.dispatchMsg(message);
+        }
     }
 
     private MessageProtobuf.Msg buildClientResponseMsg(String msgId) {
